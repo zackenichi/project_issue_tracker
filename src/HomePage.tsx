@@ -1,10 +1,21 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from './redux/index';
 import { Box, Typography, TextField, Stack, Button } from '@mui/material';
 import ProjectCard from './components/ProjectCard';
+import { addIssue } from './redux/IssueReducer';
 const HomePage = () => {
+  const dispatch = useDispatch();
+  const issueList = useSelector(
+    (state: RootState) => state.issue.projectIssues
+  );
   const [textInput, setTextInput] = useState('');
   const handleTextInputChange = (e: any) => {
     setTextInput(e.target.value);
+  };
+  const handleClick = () => {
+    setTextInput('');
+    dispatch(addIssue(textInput));
   };
   return (
     <div className="home_page">
@@ -22,13 +33,16 @@ const HomePage = () => {
               onChange={handleTextInputChange}
               value={textInput}
             />
-            <Button variant="contained">Submit</Button>
+            <Button variant="contained" onClick={handleClick}>
+              Submit
+            </Button>
           </Stack>
         </Box>
         <Box sx={{ ml: '1rem', mt: '3rem' }}>
           <Typography variant="h5">Opened issue</Typography>
-          <ProjectCard issueTitle="Bug: Issue 1" />
-          <ProjectCard issueTitle="Bug: Issue 2" />
+          {issueList.map((issue) => {
+            return <ProjectCard issueTitle={issue} />;
+          })}
         </Box>
       </Box>
     </div>
